@@ -6,12 +6,14 @@
 import Foundation
 import MapKit
 import CoreLocation
+import LocalAuthentication
 
 extension ContentView {
     @Observable
     class ViewModel {
         private(set) var locations: [Location]
         var selectedPlace: Location?
+        var isUnlocked = false
         
         let savePath = URL.documentsDirectory.appending(path: "SavedPlaces")
         
@@ -43,6 +45,25 @@ extension ContentView {
                 try data.write(to: savePath, options: [.atomic, .completeFileProtection])
             } catch {
                 print("Unable to save data.")
+            }
+        }
+        
+        func authenticate() {
+            let context = LAContext()
+            var error: NSError?
+            
+            if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+                let reason = "Please authenticate yourself to unlock your places."
+                
+                context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authenticationError in
+                    if success {
+                        self.isUnlocked = true
+                    } else {
+                        // エラー処理
+                    }
+                }
+            } else {
+                // 生体認証が利用不可の場合
             }
         }
         
