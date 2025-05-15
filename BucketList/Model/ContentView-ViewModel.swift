@@ -15,6 +15,8 @@ extension ContentView {
         var selectedPlace: Location?
         var isUnlocked = false
         
+        var showingAlert = false
+        
         let savePath = URL.documentsDirectory.appending(path: "SavedPlaces")
         
         init() {
@@ -59,11 +61,11 @@ extension ContentView {
                     if success {
                         self.isUnlocked = true
                     } else {
-                        // エラー処理
+                        self.showingAlert = true
                     }
                 }
             } else {
-                // 生体認証が利用不可の場合
+                self.showingAlert = true
             }
         }
         

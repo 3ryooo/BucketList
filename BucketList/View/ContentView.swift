@@ -20,7 +20,7 @@ struct ContentView: View {
     )
     
     var body: some View {
-        if !viewModel.isUnlocked {
+        if viewModel.isUnlocked {
             VStack {
                 Picker("マップスタイル", selection: $mapStyleValue) {
                     Text("標準").tag("standard")
@@ -64,6 +64,11 @@ struct ContentView: View {
                 .background(.blue)
                 .foregroundStyle(.white)
                 .clipShape(.capsule)
+                .alert("認証失敗", isPresented: $viewModel.showingAlert) {
+                    Button("OK", role: .cancel) {}
+                } message: {
+                    Text("もう一度お試しください")
+                }
         }
     }
     
