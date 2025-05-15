@@ -10,6 +10,7 @@ import MapKit
 struct ContentView: View {
     
     @State private var viewModel = ViewModel()
+    @State private var mapStyleValue = "standard"
     
     let startPosition = MapCameraPosition.region(
         MKCoordinateRegion(
@@ -19,8 +20,13 @@ struct ContentView: View {
     )
     
     var body: some View {
-        if viewModel.isUnlocked {
+        if !viewModel.isUnlocked {
             VStack {
+                Picker("マップスタイル", selection: $mapStyleValue) {
+                    Text("標準").tag("standard")
+                    Text("ハイブリッド").tag("hybrid")
+                }
+                .pickerStyle(.segmented)
                 MapReader { proxy in
                     Map(initialPosition: startPosition) {
                         ForEach(viewModel.locations) { location in
@@ -36,6 +42,7 @@ struct ContentView: View {
                             
                         }
                     }
+                   
                     .onTapGesture { position in
                         if let coordinate = proxy.convert(position, from: .local) {
                             viewModel.addLocation(at: coordinate)
@@ -46,8 +53,10 @@ struct ContentView: View {
                             viewModel.update(location: $0)
                         }
                     }
+                    .mapStyle(mapStyleValue == "standard" ? .standard : .hybrid)
                     
                 }
+                
             }
         } else {
             Button("Unlock Places", action: viewModel.authenticate)
